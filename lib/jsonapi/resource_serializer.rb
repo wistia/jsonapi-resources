@@ -455,11 +455,12 @@ module JSONAPI
     def foreign_key_value(source, relationship)
       related_resource_id = if source.preloaded_fragments.has_key?(format_key(relationship.name))
         source.preloaded_fragments[format_key(relationship.name)].values.first.try(:id)
-      elsif source.respond_to?("#{relationship.name}_id")
-        # If you have direct access to the underlying id, you don't have to load the relationship
-        # which can save quite a lot of time when loading a lot of data.
-        # This does not apply to e.g. has_one :through relationships.
-        source.public_send("#{relationship.name}_id")
+      # NOTE(Rsheldon) removing this as it messes up to-one relationships with hashed_ids
+      # elsif source.respond_to?("#{relationship.name}_id")
+      #   # If you have direct access to the underlying id, you don't have to load the relationship
+      #   # which can save quite a lot of time when loading a lot of data.
+      #   # This does not apply to e.g. has_one :through relationships.
+      #   source.public_send("#{relationship.name}_id")
       else
         source.public_send(relationship.name).try(:id)
       end
